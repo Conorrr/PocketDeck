@@ -5,6 +5,8 @@ import { viteStaticCopy } from 'vite-plugin-static-copy';
 import serveStatic from 'serve-static';
 import path from 'path';
 
+const externalImagesDir = path.resolve(__dirname, '../card-images/');
+
 export default defineConfig({
 	plugins: [
 		tailwindcss(),
@@ -12,26 +14,25 @@ export default defineConfig({
 		{
 			name: 'serve-external-images',
 			configureServer(server) {
-			  const imagesDir = path.resolve(__dirname, '../card-images');
-			  server.middlewares.use(
-				'/card-images',
-				serveStatic(imagesDir)
-			  );
+				server.middlewares.use(
+					'/card-images',
+					serveStatic(externalImagesDir)
+				);
 			}
-		  },
-		  viteStaticCopy({
+		},
+		viteStaticCopy({
 			targets: [
-			  {
-				src: path.resolve(__dirname, '../card-images'),
-				dest: 'card-images'
-			  }
+				{
+					src: externalImagesDir,
+					dest: ''
+				}
 			]
-		  }),
+		}),
 	],
-	server:{
+	server: {
 		fs: {
 			allow: ['..']
-		  }
+		}
 	},
 	// resolve: {
 	//   alias: {
