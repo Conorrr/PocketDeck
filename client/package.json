@@ -40,8 +40,5 @@
 			"esbuild",
 			"@tailwindcss/oxide"
 		]
-	},
-	"dependencies": {
-		"serve-static": "^2.2.0"
 	}
 }

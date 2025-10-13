@@ -5,5 +5,13 @@
 <a href="/deck/gsWB4SAAoAQEQAIGggcgBgDgAgkCDgLpA6gFcAehAWE">View Deck</a>
 <a href="/deck/gsWB4SAAoAQEQAIGggcgBgDgAgkCDgLpA6gFcAehAWE/edit">Edit Deck</a>
 <a href="/card/P-A-5">View Card</a>
+<!-- 
+<script>
+    import pikachuUrl from '$images/A2-96.webp?url';
+</script>
+
+<img src={pikachuUrl} alt="Pikachu card" /> -->
 
 <img class="drag-none h-80 select-none" src="/card-images/A2-96.webp" alt="Photo of pokemon card" />
+<img class="drag-none h-80 select-none" src="/card-images/A4b-1.webp" alt="Photo of pokemon card" />
+<img class="drag-none h-80 select-none" src="/card-images/A4b-2.webp" alt="Photo of pokemon card" />
