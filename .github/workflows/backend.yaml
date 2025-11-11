@@ -42,7 +42,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ghcr.io/conorrr/pocketdeck-backend:${GITHUB_SHA::7} backend/.
+          docker build -t ghcr.io/conorrr/pocketdeck/backend:${GITHUB_SHA::7} backend/.
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
