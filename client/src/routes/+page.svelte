@@ -1,17 +1,13 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
-<a href="/new-deck">Manually Create Deck</a>
-<a href="/upload">Create Deck from Screenshot</a>
-<a href="/deck/gsWB4SAAoAQEQAIGggcgBgDgAgkCDgLpA6gFcAehAWE">View Deck</a>
-<a href="/deck/gsWB4SAAoAQEQAIGggcgBgDgAgkCDgLpA6gFcAehAWE/edit">Edit Deck</a>
-<a href="/card/P-A-5">View Card</a>
-<!-- 
 <script>
-    import pikachuUrl from '$images/A2-96.webp?url';
 </script>
 
-<img src={pikachuUrl} alt="Pikachu card" /> -->
+<p><a href="/decks/new">Create New Deck</a></p>
+<p><a href="/upload">Create Deck from Screenshot</a></p>
+<p><a href="/decks/gsWB4SAAoAQEQAIGggcgBgDgAgkCDgLpA6gFcAehAWE">View Deck</a></p>
+<p><a href="/decks/gsWB4SAAoAQEQAIGggcgBgDgAgkCDgLpA6gFcAehAWE/edit">Edit Deck</a></p>
 
-<img class="drag-none h-80 select-none" src="/card-images/A2-96.webp" alt="Photo of pokemon card" />
-<img class="drag-none h-80 select-none" src="/card-images/A4b-1.webp" alt="Photo of pokemon card" />
-<img class="drag-none h-80 select-none" src="/card-images/A4b-2.webp" alt="Photo of pokemon card" />
+<!-- Block for recent decks -->
+
+<!-- Upload Deck -->
+
+<!-- Create new deck-->

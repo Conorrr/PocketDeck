@@ -5,6 +5,8 @@ import { viteStaticCopy } from 'vite-plugin-static-copy';
 import path from 'path';
 
 const externalImagesDir = path.resolve(__dirname, '../card-images/');
+// const externalCollectionsDir = path.resolve(__dirname, '../collections/');
+const parentDir = path.resolve(__dirname, '../');
 
 export default defineConfig({
 	plugins: [
@@ -16,6 +18,10 @@ export default defineConfig({
 					src: `${externalImagesDir}/**/*.webp`,
 					dest: 'card-images',
 					flatten: true,
+				},
+				{
+					src: `${parentDir}/*.json`,
+					dest: '',
 				}
 			]
 		}),

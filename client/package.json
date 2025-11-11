@@ -40,5 +40,8 @@
 			"esbuild",
 			"@tailwindcss/oxide"
 		]
+	},
+	"dependencies": {
+		"@openpanel/web": "^1.0.1"
 	}
 }
