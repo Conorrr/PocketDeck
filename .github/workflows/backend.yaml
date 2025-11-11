@@ -1,5 +1,9 @@
 name: Backend Build and Docker
 
+permissions:
+  contents: read
+  packages: write
+
 on:
   workflow_dispatch:
 
