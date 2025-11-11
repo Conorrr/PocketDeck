@@ -12,7 +12,8 @@ public record AppConfig(
         Path rarityMapPath,
         Path cardListPath,
         Path rawCardDetailsPath,
-        Path allCardsPath
+        Path allCardsPath,
+        String uiHost
 ) {
 
     private static String CARD_IMAGE_DIR = "CARD_IMAGE_DIR";
@@ -23,6 +24,7 @@ public record AppConfig(
     private static String CARD_LIST_PATH = "CARD_LIST_PATH";
     private static String RAW_CARD_DETAILS_PATH = "RAW_CARD_DETAILS_PATH";
     private static String ALL_CARDS_PATH = "ALL_CARDS_PATH";
+    private static String UI_HOST = "UI_HOST";
 
 
     public static AppConfig fromEnv() {
@@ -34,7 +36,8 @@ public record AppConfig(
                 pathFromEnv(RARITY_MAP_PATH),
                 pathFromEnv(CARD_LIST_PATH),
                 pathFromEnv(RAW_CARD_DETAILS_PATH),
-                pathFromEnv(ALL_CARDS_PATH)
+                pathFromEnv(ALL_CARDS_PATH),
+                System.getenv(UI_HOST)
         );
     }
 

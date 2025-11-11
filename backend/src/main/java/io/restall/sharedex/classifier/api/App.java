@@ -41,6 +41,7 @@ public class App {
     private final PokemonCardRecognizer cardRecogniser;
     private final SafeImageDecoder imageDecoder = new SafeImageDecoder();
     private final Path uploadDir;
+    private final String uiHost;
     private final Map<String, String> rarityMap;
 
     public App(AppConfig config) throws IOException {
@@ -54,12 +55,13 @@ public class App {
         });
         compressor = new DeckCompressor(config.cardListPath());
         uploadDir = config.uploadDir();
+        uiHost = config.uiHost();
     }
 
     public void start() {
         Javalin.create(config -> {
                     config.http.defaultContentType = "application/json";
-                    config.bundledPlugins.enableCors(cors -> cors.addRule(it -> it.anyHost()));
+                    config.bundledPlugins.enableCors(cors -> cors.addRule(it -> it.allowHost(uiHost)));
                 })
                 .get("/", ctx -> ctx.contentType(ContentType.HTML)
                         .result("""
