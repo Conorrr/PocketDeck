@@ -49,4 +49,4 @@ jobs:
 
       - name: Push Docker image
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/backend:${GITHUB_SHA::7}
+          docker push ghcr.io/conorrr/backend:${GITHUB_SHA::7}
