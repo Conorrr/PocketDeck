@@ -1,0 +1,50 @@
+name: Frontend Build and Deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download pregenerated card lists
+        uses: actions/download-artifact@v4
+        with:
+          name: application-config
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install frontend dependencies
+        working-directory: ./client
+        run: pnpm ci
+
+      - name: print directory contents
+        run: ls -lah
+
+      - name: Inject backend info into environment
+        run: |
+          echo "PUBLIC_API_URL=https://api.pocketdeck.cards" >> $GITHUB_ENV
+
+      - name: Build Svelte app
+        working-directory: ./client
+        run: npm run build
+
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./client

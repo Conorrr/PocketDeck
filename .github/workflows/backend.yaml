@@ -27,6 +27,7 @@ jobs:
 
       - name: Generate Artifacts
         working-directory: ./backend
+        name: application-config
         run: ./gradlew processCardsJson genPHashBin genOrbBin genLowestRarityMap genCardIdList
 
       - name: Store build artifacts
