@@ -111,7 +111,7 @@
                     {#if card?.retreat == "0"}
                         <small>None</small>
                     {:else}
-                        <Icon name="colorless" count={card ? parseInt(card?.retreat) : 1} />
+                        <Icon name="colorless" count={card && card?.retreat ? parseInt(card?.retreat) : 1} />
                     {/if}
 				</p>
 			{/if}

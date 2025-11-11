@@ -9,7 +9,7 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<div class="flex min-h-screen bg-slate-100 flex-col bg-[url(/images/bg-left.png)]">
+<div class="flex min-h-screen bg-slate-100 flex-col bg-[url(/images/bg-left.webp)]">
 	<nav class="bg-white border-b border-slate-200 shadow-lg z-1 h-12 margin-auto">
 		<div class="mx-auto pl-4 flex w-full max-w-6xl items-center justify-between">
 			<a href="/" class="block text-2xl text-slate-600 font-bold">PocketDeck.cards</a>

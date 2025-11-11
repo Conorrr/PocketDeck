@@ -4,8 +4,9 @@
 
 <div {...restProps}>
 	<div class="relative">
-		<img src="/card-images/{cardId}.webp" width="367ox" height="512px"/>
-
+		{#if cardId}
+		<img src="/card-images/{cardId}.webp" width="367ox" height="512px" alt="Pokemon card"/>
+		{/if}
 		{#if count}
 			<div
 				class="
