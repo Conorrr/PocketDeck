@@ -27,13 +27,12 @@ jobs:
 
       - name: Generate Artifacts
         working-directory: ./backend
-        name: application-config
         run: ./gradlew processCardsJson genPHashBin genOrbBin genLowestRarityMap genCardIdList
 
       - name: Store build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: backend-artifacts
+          name: application-config
           path: |
             backend/outputs/colourPHash.bin
             backend/outputs/orbDatabase.bin
