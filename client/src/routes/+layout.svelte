@@ -34,7 +34,7 @@
 	>
 		<div class="mx-auto flex w-full max-w-4xl items-center justify-center text-slate-500 px-5">
 			All Pokémon images, names, characters, and related marks are trademarks and copyright of The
-			Pokémon Company, Nintendo, Game Freak, or Creatures Inc. (“Pokémon Rights Holders”). Sharedex
+			Pokémon Company, Nintendo, Game Freak, or Creatures Inc. (“Pokémon Rights Holders”). PocketDeck.cards
 			is an unofficial site and is not endorsed by or affiliated with Pokémon Rights Holders.
 		</div>
 	</footer>
