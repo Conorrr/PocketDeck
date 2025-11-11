@@ -2,7 +2,7 @@
 	import CardImage from '$lib/components/CardImage.svelte';
 	import CardDetails from '$lib/components/CardDetails.svelte';
 	import Slideover from '$lib/components/util/Slideover.svelte';
-	import DeckCompressor from '$lib/DeckCompressor';
+
 	import type { PageProps } from './$types';
 	import TiltCard from '$lib/components/util/TiltCard.svelte';
 	import { fade } from 'svelte/transition';
@@ -11,10 +11,7 @@
 	let slideoverOpen = $state(false);
 	let slideoverCardId: null | string = $state(null);
 
-	let { params }: PageProps = $props();
-
-	var deckCompressor = new DeckCompressor();
-	const cards = deckCompressor.decompress(params.deckId);
+	let { params, data }: PageProps = $props();
 
 	function shareClick() {
 		navigator.clipboard.writeText(window.location.href);
@@ -82,7 +79,7 @@
         gap-3
       "
 	>
-		{#each cards as card}
+		{#each data.cards as card}
 			<TiltCard>
 				<CardImage
 					cardId={card.cardId}
