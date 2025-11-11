@@ -20,6 +20,9 @@ jobs:
           tag: latest-application-config
           fileName: '*'
 
+      - name: print directory contents
+        run: ls -lah
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -32,10 +35,7 @@ jobs:
 
       - name: Install frontend dependencies
         working-directory: ./client
-        run: pnpm ci
-
-      - name: print directory contents
-        run: ls -lah
+        run: pnpm i
 
       - name: Inject backend info into environment
         run: |
