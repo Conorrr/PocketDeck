@@ -29,16 +29,13 @@ jobs:
         working-directory: ./backend
         run: ./gradlew processCardsJson genPHashBin genOrbBin genLowestRarityMap genCardIdList
 
-      - name: Store build artifacts
-        uses: actions/upload-artifact@v4
+      - name: Upload as release asset
+        uses: softprops/action-gh-release@v2
         with:
-          name: application-config
-          path: |
-            backend/outputs/colourPHash.bin
-            backend/outputs/orbDatabase.bin
-            backend/outputs/rarityMap.json
-            backend/outputs/allCards.json
-            backend/outputs/cardList.json
+          tag_name: latest-application-config
+          files: backend/outputs/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build Docker image
         run: |
