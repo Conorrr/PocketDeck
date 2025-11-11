@@ -63,13 +63,6 @@ public class App {
                     config.http.defaultContentType = "application/json";
                     config.bundledPlugins.enableCors(cors -> cors.addRule(it -> it.allowHost(uiHost)));
                 })
-                .get("/", ctx -> ctx.contentType(ContentType.HTML)
-                        .result("""
-                                <form method="post" action="/upload" enctype="multipart/form-data">
-                                    <input type="file" name="screenshot">
-                                    <button>Submit</button>
-                                </form>
-                                """))
                 .post("/upload", this::handleUpload)
                 .post("/report", App::handleReport)
                 .get("/deck/{deckId}", this::handleGetDeck)
