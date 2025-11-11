@@ -5,8 +5,6 @@ import { viteStaticCopy } from 'vite-plugin-static-copy';
 import path from 'path';
 
 const externalImagesDir = path.resolve(__dirname, '../card-images/');
-// const externalCollectionsDir = path.resolve(__dirname, '../collections/');
-const parentDir = path.resolve(__dirname, '../');
 
 export default defineConfig({
 	plugins: [
@@ -21,16 +19,5 @@ export default defineConfig({
 				}
 			]
 		}),
-	],
-	server: {
-		fs: {
-			allow: ['..']
-		}
-	},
-	// resolve: {
-	//   alias: {
-	// 	$images: path.resolve(__dirname, '../card-images'),
-	// 	$collections: path.resolve(__dirname, '../collections'),
-	//   }
-	// }
+	]
 });

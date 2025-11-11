@@ -1,14 +1,10 @@
 import type { Card } from "$lib/models/Card.js";
 import { error } from "@sveltejs/kit";
-import { readFile } from "fs/promises";
+import cards from '$lib/data/allCards.json';
 
 const allCards: Map<string, Card> = new Map<string, Card>(
-  (await loadCardJson(`src/allCards.json`)).map(card => [card.cardIds[0], card] as const)
+  cards.map(card => [card.cardIds[0], card] as const)
 );
-
-async function loadCardJson(filename: string): Promise<Card[]> {
-  return JSON.parse(await readFile(filename, "utf-8"));
-}
 
 export async function GET({ params }) {
   const { cardId } = params;

@@ -1,18 +1,17 @@
 export type Card = {
     expansions: string[]
     cardIds: string[]
-    hp: string
-    energy: string
+    hp: string | null
+    energy: string| null
     name: string
     cardType: string
     evolutionType: string
     attacks: Attack[]
-    ability: Ability | undefined;
+    ability: Ability | null;
     weakness: string
-    retreat: string
+    retreat: string | null
     rarity: string // todo replace with a rarity type
     ex: boolean
-    pack: string
     alternateVersions: string[]
     artist: string
 }

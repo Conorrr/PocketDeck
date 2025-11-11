@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
-		"prebuild": "curl -L \"$CARDS_URL\" -o src/allCards.json",
+		"prebuild": "curl -L \"$ALL_CARDS_URL\" -o src/lib/data/allCards.json && curl -L \"$CARDS_LIST_URL\" -o src/lib/data/cardList.json",
 		"build": "vite build",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",

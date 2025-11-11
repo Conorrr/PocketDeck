@@ -1,4 +1,4 @@
-import cardList from './cardList.json';
+import cardList from '$lib/data/cardList.json';
 
 export interface DeckCard {
   cardId: string;
