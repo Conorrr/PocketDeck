@@ -90,7 +90,7 @@
 	aria-label="Deck screenshot upload drop zone"
 	aria-dropeffect="copy"
 	aria-live="polite"
-	class="flex place-items-center content-center justify-center p-6 h-[calc(100vh-(var(--spacing)*52))]"
+	class="flex place-items-center content-center justify-center p-6 min-h-100 h-[calc(100vh-(var(--spacing)*52))]"
 	ondragover={handleDragOver}
 	ondragleave={handleDragLeave}
 	ondrop={handleDrop}
@@ -100,7 +100,7 @@
 			e.preventDefault();
 			file && handleSubmit(file);
 		}}
-		class="z-5 w-full max-w-md bg-white p-8 rounded-2xl shadow-lg border border-slate-200 flex flex-col gap-6"
+		class="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg border border-slate-200 flex flex-col gap-6"
 	>
 		<h1 class="text-2xl font-semibold text-slate-800 text-center">Upload a Deck Screenshot</h1>
 
