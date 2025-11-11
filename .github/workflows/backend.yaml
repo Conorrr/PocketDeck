@@ -1,0 +1,52 @@
+name: Backend Build and Docker
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Build backend with Gradle
+        working-directory: ./backend
+        run: ./gradlew build
+
+      - name: Generate Artifacts
+        working-directory: ./backend
+        run: ./gradlew processCardsJson genPHashBin genOrbBin genLowestRarityMap genCardIdList
+
+      - name: Store build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-artifacts
+          path: |
+            backend/outputs/colourPHash.bin
+            backend/outputs/orbDatabase.bin
+            backend/outputs/rarityMap.json
+            backend/outputs/allCards.json
+            backend/outputs/cardList.json
+
+      - name: Build Docker image
+        run: |
+          docker build -t pocketdeck/backend:${GITHUB_SHA::7} .
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push Docker image
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/backend:${GITHUB_SHA::7}

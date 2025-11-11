@@ -21,13 +21,13 @@ application {
 
 def commonEnv = [
         "CARD_IMAGE_DIR"       : "../card-images",
-        "PHASH_BINARY_PATH"    : "colourPHash.bin",
-        "ORB_BIN_PATH"         : "orbDatabase.bin",
+        "PHASH_BINARY_PATH"    : "outputs/colourPHash.bin",
+        "ORB_BIN_PATH"         : "outputs/orbDatabase.bin",
         "UPLOAD_DIR"           : "uploads/",
-        "RARITY_MAP_PATH"      : "rarityMap.json",
-        "CARD_LIST_PATH"       : "cardList.json",
+        "RARITY_MAP_PATH"      : "outputs/rarityMap.json",
+        "CARD_LIST_PATH"       : "outputs/cardList.json",
         "RAW_CARD_DETAILS_PATH": "rawCards.json",
-        "ALL_CARDS_PATH"       : "../allCards.json",
+        "ALL_CARDS_PATH"       : "outputs/allCards.json",
 ]
 
 tasks.register('genPHashBin', JavaExec) {
