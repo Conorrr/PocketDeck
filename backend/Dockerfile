@@ -20,6 +20,9 @@ RUN apt-get update && apt-get install -y \
     libgcc-s1 \
     && rm -rf /var/lib/apt/lists/*
 
+# Copy the built JAR from the builder stage
+COPY --from=builder /app/build/libs/*.jar app.jar
+
 # Expose the Javalin port
 EXPOSE 7000
 
