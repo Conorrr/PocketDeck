@@ -38,14 +38,9 @@ jobs:
         run: |
           echo "PUBLIC_API_URL=https://api.pocketdeck.cards" >> $GITHUB_ENV
 
-      - name: Build Svelte app
-        working-directory: ./client
-        run: npm run build
-
-      - name: Deploy to Vercel
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: ./client
+      - name: Deploy frontend to Vercel
+        run: |
+          npx vercel --token ${{ secrets.VERCEL_TOKEN }} \
+            --org ${{ secrets.VERCEL_ORG_ID }} \
+            --project ${{ secrets.VERCEL_PROJECT_ID }} \
+            --prod
