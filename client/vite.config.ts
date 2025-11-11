@@ -20,8 +20,8 @@ export default defineConfig({
 					flatten: true,
 				},
 				{
-					src: `${parentDir}/*.json`,
-					dest: '',
+					src: `${parentDir}/allCards.json`,
+					dest: 'allCards.json',
 				}
 			]
 		}),

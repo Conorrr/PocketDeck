@@ -25,12 +25,6 @@
 		</div>
 	</nav>
 
-	<!-- <div
-		class="absolute bg-[url(/images/bg-left.png)] blur-xs w-full z-0 opacity-30 left-0 top-0 h-screen bg-center"
-	>
-		&nbsp;
-	</div> -->
-
 	<main class="mx-auto w-full max-w-6xl z-1 flex-grow px-2 py-5 md:px-0 min-h-100">
 		{@render children()}
 	</main>
