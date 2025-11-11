@@ -49,4 +49,4 @@ jobs:
 
       - name: Push Docker image
         run: |
-          docker push ghcr.io/conorrr/pocketdeck-backend:${GITHUB_SHA::7}
+          docker push ghcr.io/conorrr/pocketdeck/backend:${GITHUB_SHA::7}
