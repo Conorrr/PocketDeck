@@ -33,7 +33,13 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: latest-application-config
-          files: backend/outputs/*
+          files: |
+            backend/outputs/cardList.json
+            backend/outputs/rarityMap.json
+            backend/outputs/colourPHash.bin
+            backend/outputs/allCards.json
+            backend/outputs/orbDatabase.bin
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
