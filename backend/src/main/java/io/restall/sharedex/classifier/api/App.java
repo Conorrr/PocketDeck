@@ -4,13 +4,12 @@ package io.restall.sharedex.classifier.api;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.Javalin;
-import io.javalin.http.ContentType;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import io.javalin.http.UploadedFile;
 import io.restall.sharedex.classifier.AppConfig;
-import io.restall.sharedex.classifier.OutlineFinder;
 import io.restall.sharedex.classifier.ColourPHashMatcher;
+import io.restall.sharedex.classifier.OutlineFinder;
 import io.restall.sharedex.classifier.SafetyMat;
 import io.restall.sharedex.classifier.opencv.PokemonCardRecognizer;
 import io.restall.sharedex.classifier.opencv.Prediction;
@@ -63,6 +62,7 @@ public class App {
                     config.http.defaultContentType = "application/json";
                     config.bundledPlugins.enableCors(cors -> cors.addRule(it -> it.allowHost(uiHost)));
                 })
+                .get("/", config -> config.redirect(uiHost))
                 .post("/upload", this::handleUpload)
                 .post("/report", App::handleReport)
                 .get("/deck/{deckId}", this::handleGetDeck)
