@@ -3,7 +3,7 @@ import { error } from "@sveltejs/kit";
 import { readFile } from "fs/promises";
 
 const allCards: Map<string, Card> = new Map<string, Card>(
-  (await loadCardJson(`../allCards.json`)).map(card => [card.cardIds[0], card] as const)
+  (await loadCardJson(`src/allCards.json`)).map(card => [card.cardIds[0], card] as const)
 );
 
 async function loadCardJson(filename: string): Promise<Card[]> {

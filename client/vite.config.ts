@@ -18,10 +18,6 @@ export default defineConfig({
 					src: `${externalImagesDir}/**/*.webp`,
 					dest: 'card-images',
 					flatten: true,
-				},
-				{
-					src: `${parentDir}/allCards.json`,
-					dest: 'allCards.json',
 				}
 			]
 		}),
