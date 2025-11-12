@@ -80,7 +80,7 @@ public class App {
 
     @SneakyThrows
     private void handleUpload(Context ctx) {
-        var ipAddress = ctx.ip();
+        var ipAddress = getIpAddress(ctx);
         log.error("Client IP Address: {}", ipAddress);
 
         var capTime = LocalDateTime.now().minusSeconds(15);
@@ -222,6 +222,14 @@ public class App {
             return ".png";
         }
         return filename.substring(dotIndex, qIndex);
+    }
+
+    private static String getIpAddress(Context ctx) {
+        var realIp = ctx.header("X-Real-IP");
+        if (realIp != null) {
+            return realIp;
+        }
+        return ctx.ip();
     }
 
 }
