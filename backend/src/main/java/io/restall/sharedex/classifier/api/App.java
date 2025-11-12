@@ -24,9 +24,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -39,9 +41,12 @@ public class App {
     private final ColourPHashMatcher hashMatcher;
     private final PokemonCardRecognizer cardRecogniser;
     private final SafeImageDecoder imageDecoder = new SafeImageDecoder();
+    private final ImageDownloader imageDownloader = new ImageDownloader();
     private final Path uploadDir;
     private final String uiHost;
     private final Map<String, String> rarityMap;
+
+    private final Map<String, LocalDateTime> lastReqTime = new ConcurrentHashMap<>();
 
     public App(AppConfig config) throws IOException {
         if (!Files.exists(config.uploadDir())) {
@@ -75,27 +80,58 @@ public class App {
 
     @SneakyThrows
     private void handleUpload(Context ctx) {
+        var ipAddress = ctx.ip();
+        log.error("Client IP Address: {}", ipAddress);
+
+        var capTime = LocalDateTime.now().minusSeconds(15);
+        if (lastReqTime.getOrDefault(ipAddress, LocalDateTime.MIN).isAfter(capTime)) {
+            ctx.status(HttpStatus.BAD_REQUEST)
+                    .json(Map.of("error", "Rate Limit Reached. Please try again in 15 seconds."));
+            return;
+        }
+        lastReqTime.put(ipAddress, LocalDateTime.now());
+
         UploadedFile file = ctx.uploadedFile("screenshot");
-        if (file == null) {
+        var uri = ctx.formParam("uri");
+
+        if (file == null && uri == null) {
             ctx.status(HttpStatus.BAD_REQUEST)
                     .json(Map.of("error", "No file uploaded"));
             return;
         }
 
-        if (!file.contentType().startsWith("image/")) {
-            ctx.status(HttpStatus.BAD_REQUEST)
-                    .json(Map.of("error", "Only image files are allowed"));
-            return;
-        }
-
-        if (file.size() > MAX_FILE_SIZE) {
-            ctx.status(HttpStatus.BAD_REQUEST)
-                    .json(Map.of("error", "File too large (max 5MB)"));
-            return;
-        }
-
         var requestId = UUID.randomUUID().toString();
-        var screenshotMat = readImage(file.content());
+        if (file != null) {
+            if (!file.contentType().startsWith("image/")) {
+                ctx.status(HttpStatus.BAD_REQUEST)
+                        .json(Map.of("error", "Only image files are allowed"));
+                return;
+            }
+
+            if (file.size() > MAX_FILE_SIZE) {
+                ctx.status(HttpStatus.BAD_REQUEST)
+                        .json(Map.of("error", "File too large (max 5MB)"));
+                return;
+            }
+            processFile(ctx, requestId, file.content());
+
+            storeImage(file.filename(), file.content(), requestId);
+        } else {
+            var imageIs = imageDownloader.downloadFile(uri);
+            imageIs.mark((int) MAX_FILE_SIZE);
+            if (imageIs == null) {
+                ctx.status(HttpStatus.BAD_REQUEST)
+                        .json(Map.of("error", "Unable to process file"));
+                return;
+            }
+            processFile(ctx, requestId, imageIs);
+            imageIs.reset();
+            storeImage(uri, imageIs, requestId);
+        }
+    }
+
+    private void processFile(Context ctx, String requestId, InputStream fileInputStream) {
+        var screenshotMat = readImage(fileInputStream);
 
         var outlines = OutlineFinder.findOutlines(screenshotMat);
         var results = outlines.stream()
@@ -136,19 +172,17 @@ public class App {
 
         ctx.status(HttpStatus.OK)
                 .json(new UploadResult(compressed, requestId, results.size(), results));
-
-        storeImage(file, requestId);
     }
 
-    private void storeImage(UploadedFile file, String requestId) throws IOException {
-        var fileExtension = getFileExtension(file.filename());
+    private void storeImage(String filename, InputStream inputStream, String requestId) throws IOException {
+        var fileExtension = getFileExtension(filename);
         Path target = uploadDir.resolve(requestId + fileExtension).normalize();
 
         if (!target.startsWith(uploadDir)) {
             log.warn("Attempt to write file to outside of dir");
             return;
         }
-        Files.copy(file.content(), target);
+        Files.copy(inputStream, target);
     }
 
     @SneakyThrows
@@ -182,11 +216,12 @@ public class App {
     }
 
     private static String getFileExtension(String filename) {
-        var dotIndex = filename.indexOf('.');
-        if (dotIndex == -1) {
-            return "";
+        var dotIndex = filename.lastIndexOf('.');
+        var qIndex = filename.indexOf('?') == -1 ? filename.length() : filename.indexOf('?');
+        if (dotIndex == -1 ||  qIndex - dotIndex > 5) {
+            return ".png";
         }
-        return filename.substring(dotIndex);
+        return filename.substring(dotIndex, qIndex);
     }
 
 }

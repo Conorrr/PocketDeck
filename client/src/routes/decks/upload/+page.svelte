@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { env } from '$env/dynamic/public';
 	import { goto } from '$app/navigation';
+	import { env } from '$env/dynamic/public';
 	import { op } from '$lib/openpanel';
 
 	let file: File | null = null;
@@ -8,13 +8,18 @@
 	let error: string | null = null;
 	let dragging = false;
 
-	const handleSubmit = async (file: File) => {
+	const handleSubmit = async (file?: File, uri?: string) => {
 		uploading = true;
 		error = null;
 
 		try {
 			const formData = new FormData();
-			formData.append('screenshot', file);
+			if (file) {
+				formData.append('screenshot', file);
+			}
+			if (uri) {
+				formData.append('uri', uri);
+			}
 
 			const res = await fetch(`${env.PUBLIC_API_URL}/upload`, {
 				method: 'POST',
@@ -65,17 +70,25 @@
 		e.preventDefault();
 		dragging = false;
 
+		const dt = e.dataTransfer;
+		if (!dt) return;
+
 		const droppedFile = e.dataTransfer?.files?.[0];
 		if (droppedFile) {
 			handleSubmit(droppedFile);
+			op?.track('screenshot_dropped', { droppedFile: droppedFile?.name });
+		} else {
+			const uri = dt.getData('text/uri-list') || dt.getData('text/plain');
+			if (uri && uri.startsWith('http')) {
+				handleSubmit(undefined, uri);
+				op?.track('screenshot_dropped', { droppedUrl: uri });
+			}
 		}
-		op?.track('screenshot_dropped', { droppedFile: droppedFile?.name });
 	};
 
 	const exampleImages = Array.from({ length: 10 }, (_, i) => `/examples/${i + 1}.webp`);
 	const leftImages = Array.from({ length: 3 }, (_, i) => `/examples/${i + 1}.webp`);
 </script>
-
 
 {#if dragging}
 	<div
