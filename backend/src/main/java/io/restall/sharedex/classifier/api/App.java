@@ -82,7 +82,7 @@ public class App {
     private void handleUpload(Context ctx) {
         var ipAddress = getIpAddress(ctx);
 
-        var capTime = LocalDateTime.now().minusSeconds(0);
+        var capTime = LocalDateTime.now().minusSeconds(15);
         if (lastReqTime.getOrDefault(ipAddress, LocalDateTime.MIN).isAfter(capTime)) {
             ctx.status(HttpStatus.BAD_REQUEST)
                     .json(Map.of("error", "Rate Limit Reached. Please try again in 15 seconds."));
