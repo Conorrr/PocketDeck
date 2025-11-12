@@ -83,7 +83,10 @@ public class App {
         var ipAddress = getIpAddress(ctx);
         log.error("Client IP Address: {}", ipAddress);
 
-        var capTime = LocalDateTime.now().minusSeconds(15);
+        // FIXME Get IP address form behind NAT
+//        log all headers
+        System.out.println(ctx.headerMap());
+        var capTime = LocalDateTime.now().minusSeconds(0);
         if (lastReqTime.getOrDefault(ipAddress, LocalDateTime.MIN).isAfter(capTime)) {
             ctx.status(HttpStatus.BAD_REQUEST)
                     .json(Map.of("error", "Rate Limit Reached. Please try again in 15 seconds."));
