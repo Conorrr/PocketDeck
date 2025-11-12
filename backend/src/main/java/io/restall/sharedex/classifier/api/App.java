@@ -81,11 +81,7 @@ public class App {
     @SneakyThrows
     private void handleUpload(Context ctx) {
         var ipAddress = getIpAddress(ctx);
-        log.error("Client IP Address: {}", ipAddress);
 
-        // FIXME Get IP address form behind NAT
-//        log all headers
-        System.out.println(ctx.headerMap());
         var capTime = LocalDateTime.now().minusSeconds(0);
         if (lastReqTime.getOrDefault(ipAddress, LocalDateTime.MIN).isAfter(capTime)) {
             ctx.status(HttpStatus.BAD_REQUEST)
