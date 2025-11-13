@@ -4,6 +4,7 @@ package io.restall.sharedex.classifier.api;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.Javalin;
+import io.javalin.http.ContentType;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import io.javalin.http.UploadedFile;
@@ -42,24 +43,28 @@ public class App {
     private final PokemonCardRecognizer cardRecogniser;
     private final SafeImageDecoder imageDecoder = new SafeImageDecoder();
     private final ImageDownloader imageDownloader = new ImageDownloader();
+    private final PreviewGenerator previewGenerator;
     private final Path uploadDir;
+    private final Path previewDir;
     private final String uiHost;
     private final Map<String, String> rarityMap;
 
     private final Map<String, LocalDateTime> lastReqTime = new ConcurrentHashMap<>();
 
-    public App(AppConfig config) throws IOException {
-        if (!Files.exists(config.uploadDir())) {
-            Files.createDirectories(config.uploadDir());
+    public App(AppConfig appConfig) throws IOException {
+        if (!Files.exists(appConfig.uploadDir())) {
+            Files.createDirectories(appConfig.uploadDir());
         }
-        hashMatcher = new ColourPHashMatcher(config.pHashBinary());
+        hashMatcher = new ColourPHashMatcher(appConfig.pHashBinary());
         cardRecogniser = new PokemonCardRecognizer(50, true);
-        cardRecogniser.loadDatabase(config.orbDatabaseBin());
-        rarityMap = new ObjectMapper().readValue(Files.newInputStream(config.rarityMapPath()), new TypeReference<>() {
+        cardRecogniser.loadDatabase(appConfig.orbDatabaseBin());
+        rarityMap = new ObjectMapper().readValue(Files.newInputStream(appConfig.rarityMapPath()), new TypeReference<>() {
         });
-        compressor = new DeckCompressor(config.cardListPath());
-        uploadDir = config.uploadDir();
-        uiHost = config.uiHost();
+        compressor = new DeckCompressor(appConfig.cardListPath());
+        previewGenerator = new PreviewGenerator(appConfig);
+        uploadDir = appConfig.uploadDir();
+        uiHost = appConfig.uiHost();
+        previewDir = appConfig.previewDir();
     }
 
     public void start() {
@@ -67,7 +72,8 @@ public class App {
                     config.http.defaultContentType = "application/json";
                     config.bundledPlugins.enableCors(cors -> cors.addRule(it -> it.allowHost(uiHost)));
                 })
-                .get("/", config -> config.redirect(uiHost))
+                .get("/", ctx -> ctx.redirect(uiHost))
+                .get("/preview/{deckId}.webp", this::handlePreview)
                 .post("/upload", this::handleUpload)
                 .post("/report", App::handleReport)
                 .get("/deck/{deckId}", this::handleGetDeck)
@@ -76,6 +82,19 @@ public class App {
 
     public static void main(String[] args) throws IOException {
         new App(AppConfig.fromEnv()).start();
+    }
+
+    @SneakyThrows
+    private void handlePreview(Context ctx) {
+        var deckId = ctx.pathParam("deckId");
+        var previewPath = previewDir.resolve(deckId + ".webp");
+
+        if (!Files.exists(previewPath)) {
+            var cardIds = compressor.decompress(deckId);
+            previewGenerator.generatePreview(cardIds, deckId);
+        }
+        ctx.contentType(ContentType.IMAGE_WEBP)
+                .result(Files.newInputStream(previewPath));
     }
 
     @SneakyThrows
@@ -171,6 +190,7 @@ public class App {
 
         ctx.status(HttpStatus.OK)
                 .json(new UploadResult(compressed, requestId, results.size(), results));
+        previewGenerator.generatePreview(cardIds, compressed);
     }
 
     private void storeImage(String filename, InputStream inputStream, String requestId) throws IOException {
@@ -217,7 +237,7 @@ public class App {
     private static String getFileExtension(String filename) {
         var dotIndex = filename.lastIndexOf('.');
         var qIndex = filename.indexOf('?') == -1 ? filename.length() : filename.indexOf('?');
-        if (dotIndex == -1 ||  qIndex - dotIndex > 5) {
+        if (dotIndex == -1 || qIndex - dotIndex > 5) {
             return ".png";
         }
         return filename.substring(dotIndex, qIndex);

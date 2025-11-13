@@ -29,6 +29,7 @@ def commonEnv = [
         "RAW_CARD_DETAILS_PATH": "rawCards.json",
         "ALL_CARDS_PATH"       : "outputs/allCards.json",
         "UI_HOST"              : "http://localhost:5173",
+        "PREVIEW_DIR"          : "previews/",
 ]
 
 tasks.register('genPHashBin', JavaExec) {

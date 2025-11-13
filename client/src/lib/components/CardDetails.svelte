@@ -146,7 +146,6 @@
 							{#each card?.attacks as attack}
 								<li class="p-2 rounded bg-gray-200 flex flex-col items-start justify-items-start">
 									<span><strong>{attack.name}</strong> - {attack.damage}</span>
-									<!-- TODO replace the cost with icons -->
 									<small class="text-gray-600 flex items-center gap-1">
                                         Cost:
                                         {#if attack && attack.cost.length == 0}
