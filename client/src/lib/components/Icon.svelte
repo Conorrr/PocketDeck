@@ -40,7 +40,7 @@
 		name,
 		count = 1,
 		height = 4
-	}: { name?: IconName | null; count?: number; height?: number } = $props<>();
+	}: { name?: IconName | null; count?: number; height?: number } = $props();
 </script>
 
 {#if name}
