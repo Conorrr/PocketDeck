@@ -30,6 +30,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -48,6 +51,7 @@ public class App {
     private final Path previewDir;
     private final String uiHost;
     private final Map<String, String> rarityMap;
+    private final ExecutorService previewGeneratorThread = Executors.newFixedThreadPool(2);
 
     private final Map<String, LocalDateTime> lastReqTime = new ConcurrentHashMap<>();
 
@@ -93,8 +97,12 @@ public class App {
             var cardIds = compressor.decompress(deckId);
             previewGenerator.generatePreview(cardIds, deckId);
         }
-        ctx.contentType(ContentType.IMAGE_WEBP)
-                .result(Files.newInputStream(previewPath));
+        if (Files.exists(previewPath)) {
+            ctx.contentType(ContentType.IMAGE_WEBP)
+                    .result(Files.newInputStream(previewPath));
+        } else {
+            ctx.status(HttpStatus.NOT_FOUND);
+        }
     }
 
     @SneakyThrows
@@ -185,12 +193,13 @@ public class App {
         var cardIds = results.stream().map(Prediction::cardName).toList();
         String compressed = null;
         if (results.size() == 20) {
-            compressed = compressor.compress(cardIds);
+            var deckId = compressor.compress(cardIds);
+            previewGeneratorThread.execute(() -> previewGenerator.generatePreview(cardIds, deckId));
+            compressed = deckId;
         }
 
         ctx.status(HttpStatus.OK)
                 .json(new UploadResult(compressed, requestId, results.size(), results));
-        previewGenerator.generatePreview(cardIds, compressed);
     }
 
     private void storeImage(String filename, InputStream inputStream, String requestId) throws IOException {

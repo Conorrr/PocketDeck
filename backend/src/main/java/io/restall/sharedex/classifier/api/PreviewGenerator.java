@@ -63,6 +63,9 @@ public class PreviewGenerator {
     }
 
     public void generatePreview(List<String> cardIds, String deckId) {
+        if (cardIds.size() != 20) {
+            return;
+        }
         var rows = new ArrayList<Mat>(9);
         rows.add(rowPad);
         for (int i = 0; i < 4; i++) {
