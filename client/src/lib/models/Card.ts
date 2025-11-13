@@ -2,22 +2,22 @@ export type Card = {
     expansions: string[]
     cardIds: string[]
     hp: string | null
-    energy: string| null
+    energy: Energy | null
     name: string
     cardType: string
-    evolutionType: string
+    evolutionType?: string
     attacks: Attack[]
     ability: Ability | null;
-    weakness: string
+    weakness?: Energy | "none"
     retreat: string | null
-    rarity: string // todo replace with a rarity type
+    rarity: Rarity
     ex: boolean
     alternateVersions: string[]
     artist: string
 }
 
 export type Attack = {
-    cost: string[]
+    cost: Energy[]
     name: string
     damage: string
     effect: string
@@ -27,3 +27,6 @@ export type Ability = {
     name: string,
     effect: string,
 }
+
+export type Energy = 'colorless' | 'darkness' | 'fighting' | 'fire' | 'grass' | 'lightning' | 'metal' | 'psychic' | 'water'
+export type Rarity = '1d'| '2d'| '3d'| '4d'| 'p'| 'sh'| '2sh'| '1s'| '2s'| '3s'| 'c';

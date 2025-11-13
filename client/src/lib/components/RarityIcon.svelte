@@ -1,12 +1,14 @@
 <script lang="ts">
+	import type { Rarity } from '$lib/models/Card';
 	import Icon from './Icon.svelte';
 
-	let { rarity } = $props<{ rarity: string | undefined }>();
+	let { rarity } = $props<{ rarity: Rarity | undefined }>();
+
 	let icon = $derived.by(() => {
 		return { name: mapToIcon(rarity), count: count(rarity) };
 	});
 
-	function mapToIcon(rarity: string | undefined): string | undefined {
+	function mapToIcon(rarity: string | undefined): 'crown' | 'diamond' | 'shiny' | 'star' | undefined {
 		if (!rarity) {
 			return undefined;
 		}

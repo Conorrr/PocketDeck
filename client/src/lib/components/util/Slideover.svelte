@@ -24,20 +24,22 @@
 >
 </div>
 
+<svelte:window onkeydown={e => e.key === 'Escape' && close()} />
+
 <!-- Panel -->
 <div
 	class="fixed inset-y-0 right-0 w-full max-w-md flex-grow px-2 py-2 transform transition-transform duration-300 flex flex-col"
 	class:translate-x-full={!open}
 >
 	<button
-		class="z-2 absolute top-8 right-8 flex items-center justify-center h-8 w-8 rounded-full bg-gray-700 text-gray-200 hover:bg-gray-900 hover:text-gray-200 shadow-sm transition-colors"
+		class="z-2 absolute top-8 right-8 flex items-center justify-center h-8 w-8 rounded-lg bg-gray-700 text-gray-200 hover:bg-gray-900 hover:text-gray-200 shadow-sm transition-colors"
 		onclick={close}
 	>
 		✕
 	</button>
 
 	<div
-		class="bg-slate-50 mx-4 my-4 flex-1 overflow-y-scroll shadow-xl bg-white rounded-2xl shadow"
+		class="bg-slate-50 mx-4 my-4 flex-1 overflow-y-scroll shadow-xl bg-white rounded-lg shadow"
 		bind:this={scrollContainer}
 	>
 		{@render children?.()}

@@ -2,8 +2,10 @@ import type { Card } from "$lib/models/Card.js";
 import { error } from "@sveltejs/kit";
 import cards from '$lib/data/allCards.json';
 
+const typedCard = cards as Card[];
+
 const allCards: Map<string, Card> = new Map<string, Card>(
-  cards.map(card => [card.cardIds[0], card] as const)
+  typedCard.map(card => [card.cardIds[0], card] as const)
 );
 
 export async function GET({ params }) {
@@ -16,6 +18,9 @@ export async function GET({ params }) {
   }
 
   return new Response(JSON.stringify(cardDetails), {
-    headers: { "Content-Type": "application/json" }
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "public, max-age=86400"
+     }
   });
 }

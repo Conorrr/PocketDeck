@@ -12,10 +12,10 @@
 	let card: null | Card = $state(null);
 	let error = $state(null);
 
-	let expansionsStr = $state(['']);
+	let expansionsStr: string[] | null = $state(null);
 	$effect(() => {
 		if (!card) {
-			expansionsStr = [''];
+			expansionsStr = null;
 		} else {
 			expansionsStr = card.expansions.map(nameExpansion);
 		}
@@ -23,6 +23,7 @@
 
 	async function loadCard() {
 		try {
+			card = null;
 			const res = await fetch(`/api/cards/${cardId}`);
 			if (!res.ok) {
 				throw new Error(`Failed to load card ${cardId}`);
@@ -73,9 +74,13 @@
 			{#if !card || card.cardType !== 'pokémon'}
 				<p>
 					<strong>Type:</strong>
-					<LoadingText
-						value={capitalise(card?.cardType) + ' | ' + capitalise(card?.evolutionType)}
-					/>
+					{#if card}
+						<LoadingText
+							value={capitalise(card?.cardType) + ' | ' + capitalise(card?.evolutionType)}
+						/>
+					{:else}
+						<LoadingText value={null} />
+					{/if}
 				</p>
 			{/if}
 			{#if !card || card.cardType == 'pokémon'}
@@ -112,7 +117,7 @@
 					{#if card?.retreat == '0'}
 						<small>None</small>
 					{:else}
-						<Icon name="colorless" count={card && card?.retreat ? parseInt(card?.retreat) : 1} />
+						<Icon name={card ? 'colorless' : null} count={card && card?.retreat ? parseInt(card?.retreat) : 1} />
 					{/if}
 				</p>
 			{/if}
@@ -121,7 +126,7 @@
 				<h3 class="font-semibold mt-4 mb-2">Ability:</h3>
 				<ul class="space-y-1">
 					{#if card}
-						{#if card.ability}
+						{#if card?.ability}
 							<li class="p-2 rounded bg-gray-200">
 								{#if card.ability.name}
 									<strong>{card.ability.name}:</strong>

@@ -1,11 +1,21 @@
 <script lang="ts">
 	let { cardId, count = null, name, ...restProps } = $props();
+	let isLoaded = $state(false);
 </script>
 
 <div {...restProps}>
 	<div class="relative">
+		{#if !isLoaded}
+			<div class="absolute inset-0 bg-slate-300 animate-pulse" aria-hidden="true"></div>
+		{/if}
 		{#if cardId}
-		<img src="/card-images/{cardId}.webp" width="367ox" height="512px" alt="{name} Card"/>
+			<img
+				src="/card-images/{cardId}.webp"
+				width="367ox"
+				height="512px"
+				alt="{name} Card"
+				onload={() => (isLoaded = true)}
+			/>
 		{/if}
 		{#if count}
 			<div
