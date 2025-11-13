@@ -7,6 +7,7 @@
 	import TiltCard from '$lib/components/util/TiltCard.svelte';
 	import { fade } from 'svelte/transition';
 	import { op } from '$lib/openpanel';
+	import { PUBLIC_API_URL } from '$env/static/public';
 
 	let slideoverOpen = $state(false);
 	let slideoverCardId: null | string = $state(null);
@@ -22,14 +23,30 @@
 	var copiedPopup = $state(false);
 </script>
 
-<div class="p-4">
-	<div class="flex justify-end mb-3">
+<svelte:head>
+	<title>{data.title}</title>
+	<meta name="description" content={data.description} />
+	<meta property="og:title" content={data.title} />
+	<meta property="og:description" content={data.description} />
+	<meta property="og:image" content={`${PUBLIC_API_URL}/preview/${data.deckId}.webp`} />
+	<meta property="og:url" content={data.currentUrl} />
+	<meta property="og:type" content="website" />
+</svelte:head>
+
+<div>
+	<div
+		class="flex items-center justify-between mb-4 opacity-90 bg-white text-slate-900 p-2 pl-3 rounded-xl shadow-md border border-slate-300/50"
+	>
+		<h1 class="text-xl font-semibold tracking-tight">
+			{data.name}
+		</h1>
+
 		<button
 			onclick={shareClick}
 			id="shareBtn"
 			type="button"
 			aria-label="Share this page"
-			class="cursor-pointer shadow-xl text-right inline-flex items-center gap-2 px-3 py-2 rounded-md bg-slate-600 text-white hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 transition"
+			class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 text-white hover:bg-slate-700 active:scale-95 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2"
 			title="Share"
 		>
 			<!-- Share icon -->
@@ -84,6 +101,7 @@
 				<CardImage
 					cardId={card.cardId}
 					count={card.count}
+					name={card.name}
 					class="
                         shadow-md
                         rounded-lg

@@ -1,12 +1,15 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { env } from '$env/dynamic/public';
+	import { PUBLIC_API_URL } from '$env/static/public';
 	import { op } from '$lib/openpanel';
+	import type { PageProps } from './$types';
+
+	let { data }: PageProps = $props();
 
 	let file: File | null = null;
-	let uploading = false;
-	let error: string | null = null;
-	let dragging = false;
+	let uploading = $state(false);
+	let error: string | null = $state(null);
+	let dragging = $state(false);
 
 	const handleSubmit = async (file?: File, uri?: string) => {
 		uploading = true;
@@ -21,7 +24,7 @@
 				formData.append('uri', uri);
 			}
 
-			const res = await fetch(`${env.PUBLIC_API_URL}/upload`, {
+			const res = await fetch(`${PUBLIC_API_URL}/upload`, {
 				method: 'POST',
 				body: formData
 			});
@@ -45,9 +48,8 @@
 			op?.track('upload_success', { deckId: data.deckId });
 			goto(`/decks/${data.deckId}`);
 		} catch (err: any) {
-			error = err.message ?? 'Unknown error occurred.';
-		} finally {
 			uploading = false;
+			error = err.message ?? 'Unknown error occurred.';
 		}
 	};
 
@@ -85,10 +87,16 @@
 			}
 		}
 	};
-
-	const exampleImages = Array.from({ length: 10 }, (_, i) => `/examples/${i + 1}.webp`);
-	const leftImages = Array.from({ length: 3 }, (_, i) => `/examples/${i + 1}.webp`);
 </script>
+
+<svelte:head>
+	<title>PocketDeck - Upload</title>
+	<meta name="description" content="Easily share decks for Pokemon TCG Pocket. Upload new decks." />
+	<meta property="og:title" content="PocketDeck - Upload" />
+	<meta property="og:description" content="Easily share decks for Pokemon TCG Pocket. Upload new decks." />
+	<meta property="og:url" content={`${data.currentUrl}`} />
+	<meta property="og:type" content="website" />
+</svelte:head>
 
 {#if dragging}
 	<div

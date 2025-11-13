@@ -1,11 +1,11 @@
 <script lang="ts">
-	let { cardId, count = null, ...restProps } = $props();
+	let { cardId, count = null, name, ...restProps } = $props();
 </script>
 
 <div {...restProps}>
 	<div class="relative">
 		{#if cardId}
-		<img src="/card-images/{cardId}.webp" width="367ox" height="512px" alt="Pokemon card"/>
+		<img src="/card-images/{cardId}.webp" width="367ox" height="512px" alt="{name} Card"/>
 		{/if}
 		{#if count}
 			<div

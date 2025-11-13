@@ -12,14 +12,14 @@
 	let card: null | Card = $state(null);
 	let error = $state(null);
 
-    let expansionsStr = $state([""])
-    $effect(() => {
-        if(!card) {
-            expansionsStr = [""];
-        } else {
-            expansionsStr = card.expansions.map(nameExpansion);
-        }
-    })
+	let expansionsStr = $state(['']);
+	$effect(() => {
+		if (!card) {
+			expansionsStr = [''];
+		} else {
+			expansionsStr = card.expansions.map(nameExpansion);
+		}
+	});
 
 	async function loadCard() {
 		try {
@@ -39,8 +39,6 @@
 			loadCard();
 		}
 	});
-
-    
 </script>
 
 <div class="bg-white z-1 sticky top-0 bg-white px-4 py-2 border-b-2 border-slate-400 shadow-xl">
@@ -58,61 +56,64 @@
                     rounded-xl
                     overflow-hidden"
 				{cardId}
+				name={card?.name}
 			/>
 
 			<p>
 				<strong class="font-semibold">Expansions:</strong>
 				<LoadingText value={expansionsStr} width="w-20" />
 			</p>
-            
-            {#if !card || card.rarity !== 'p'}
-                <p class="flex items-center gap-1">
-                    <strong class="font-semibold">Rarity:</strong>
-                    <RarityIcon rarity={card?.rarity} />
-                </p>
-            {/if}
-            {#if !card || card.cardType !== 'pokémon'}
-                <p>
-                    <strong>Type:</strong>
-                    <LoadingText value={capitalise(card?.cardType) + " | " + capitalise(card?.evolutionType)} />
-                </p>
-            {/if}
+
+			{#if !card || card.rarity !== 'p'}
+				<p class="flex items-center gap-1">
+					<strong class="font-semibold">Rarity:</strong>
+					<RarityIcon rarity={card?.rarity} />
+				</p>
+			{/if}
+			{#if !card || card.cardType !== 'pokémon'}
+				<p>
+					<strong>Type:</strong>
+					<LoadingText
+						value={capitalise(card?.cardType) + ' | ' + capitalise(card?.evolutionType)}
+					/>
+				</p>
+			{/if}
 			{#if !card || card.cardType == 'pokémon'}
-                <p>
-                    <strong>Type:</strong>
-                    <LoadingText value={capitalise(card?.cardType)} />
-                </p>
+				<p>
+					<strong>Type:</strong>
+					<LoadingText value={capitalise(card?.cardType)} />
+				</p>
 				<p class="flex items-center gap-1">
 					<strong>Energy:</strong>
-                    <Icon name={card?.energy} />
+					<Icon name={card?.energy} />
 				</p>
 				<p>
 					<strong>HP:</strong>
 					<LoadingText value={card?.hp} width="w-10" />
 				</p>
 			{/if}
-            {#if !card || card?.cardType === "pokémon"}
-			<p>
-				<strong>Evolution:</strong>
-				<LoadingText value={capitalise(card?.evolutionType)} />
-			</p>
-            {/if}
+			{#if !card || card?.cardType === 'pokémon'}
+				<p>
+					<strong>Evolution:</strong>
+					<LoadingText value={capitalise(card?.evolutionType)} />
+				</p>
+			{/if}
 			{#if !card || card.cardType == 'pokémon'}
-                <p class="flex items-center gap-1">
-                    <strong>Weakness:</strong>
-                    {#if card?.weakness == "none"}
-                        <small>None</small>
-                    {:else}
-                        <Icon name={card?.weakness} />
-                    {/if}
+				<p class="flex items-center gap-1">
+					<strong>Weakness:</strong>
+					{#if card?.weakness == 'none'}
+						<small>None</small>
+					{:else}
+						<Icon name={card?.weakness} />
+					{/if}
 				</p>
 				<p class="flex items-center gap-1">
-                    <strong>Retreat:</strong>
-                    {#if card?.retreat == "0"}
-                        <small>None</small>
-                    {:else}
-                        <Icon name="colorless" count={card && card?.retreat ? parseInt(card?.retreat) : 1} />
-                    {/if}
+					<strong>Retreat:</strong>
+					{#if card?.retreat == '0'}
+						<small>None</small>
+					{:else}
+						<Icon name="colorless" count={card && card?.retreat ? parseInt(card?.retreat) : 1} />
+					{/if}
 				</p>
 			{/if}
 
@@ -147,14 +148,14 @@
 								<li class="p-2 rounded bg-gray-200 flex flex-col items-start justify-items-start">
 									<span><strong>{attack.name}</strong> - {attack.damage}</span>
 									<small class="text-gray-600 flex items-center gap-1">
-                                        Cost:
-                                        {#if attack && attack.cost.length == 0}
-                                            <Icon name={"blank"} count={1} />
-                                        {/if}
-                                        {#each attack?.cost as cost}
-                                            <Icon name={cost} count={1} />
-                                        {/each}
-                                    </small>
+										Cost:
+										{#if attack && attack.cost.length == 0}
+											<Icon name={'blank'} count={1} />
+										{/if}
+										{#each attack?.cost as cost}
+											<Icon name={cost} count={1} />
+										{/each}
+									</small>
 									<small class="text-gray-600">Effect: {attack.effect}</small>
 								</li>
 							{/each}
@@ -169,29 +170,29 @@
 				<strong>Artist:</strong>
 				<LoadingText value={card?.artist} />
 			</p>
-            
-			<!-- <div> -->
-				<!-- <h3 class="font-semibold mt-4 mb-2">Alternate Versions:</h3> -->
 
-                <p class="flex items-center gap-1">
-                    <strong>Alternate Versions:</strong>
-                    {#if card?.alternateVersions.length == 0}
-                        <small>None</small>
-                    {/if}
-                </p>
+			<p class="flex items-center gap-1">
+				<strong>Alternate Versions:</strong>
+				{#if card?.alternateVersions.length == 0}
+					<small>None</small>
+				{/if}
+			</p>
 
-				<div class="grid grid-cols-3 gap-2">
-					{#if card}
-                        {#each card?.alternateVersions as alt}
-                            <CardImage onclick={() => (cardId = alt)} cardId={alt} />
-                        {/each}
-					{:else}
-						<div class="p-2 rounded bg-gray-50 h-60 animate-pulse bg-gray-200"></div>
-						<div class="p-2 rounded bg-gray-50 h-60 animate-pulse bg-gray-200"></div>
-						<div class="p-2 rounded bg-gray-50 h-60 animate-pulse bg-gray-200"></div>
-					{/if}
-				</div>
-			<!-- </div> -->
+			<div class="grid grid-cols-3 gap-2">
+				{#if card}
+					{#each card?.alternateVersions as alt}
+						<CardImage
+							onclick={() => (cardId = alt)}
+							name={`Alternate version of ${card?.name} (${alt})`}
+							cardId={alt}
+						/>
+					{/each}
+				{:else}
+					<div class="p-2 rounded bg-gray-50 h-60 animate-pulse bg-gray-200"></div>
+					<div class="p-2 rounded bg-gray-50 h-60 animate-pulse bg-gray-200"></div>
+					<div class="p-2 rounded bg-gray-50 h-60 animate-pulse bg-gray-200"></div>
+				{/if}
+			</div>
 		</div>
 	{/if}
 </div>
