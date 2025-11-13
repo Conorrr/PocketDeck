@@ -45,7 +45,7 @@
 				throw new Error('Unable to find a full deck in the image.');
 			}
 
-			op?.track('upload_success', { deckId: data.deckId });
+			op?.track('upload_success', { deckId: data.deckId, uploadId: data.uploadId });
 			goto(`/decks/${data.deckId}`);
 		} catch (err: any) {
 			uploading = false;
