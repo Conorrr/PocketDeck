@@ -32,7 +32,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -51,7 +51,7 @@ public class App {
     private final Path previewDir;
     private final String uiHost;
     private final Map<String, String> rarityMap;
-    private final ExecutorService previewGeneratorThread = Executors.newFixedThreadPool(2);
+    private final ExecutorService previewGeneratorExecutor = Executors.newFixedThreadPool(2);
 
     private final Map<String, LocalDateTime> lastReqTime = new ConcurrentHashMap<>();
 
@@ -95,7 +95,12 @@ public class App {
 
         if (!Files.exists(previewPath)) {
             var cardIds = compressor.decompress(deckId);
-            previewGenerator.generatePreview(cardIds, deckId);
+            // Reduce the risk of getting hit by some bot or someone malicious
+            var future = previewGeneratorExecutor.submit(() -> previewGenerator.generatePreview(cardIds, deckId));
+            future.get(2, TimeUnit.SECONDS);
+            if (!future.isDone()) {
+                future.cancel(false);
+            }
         }
         if (Files.exists(previewPath)) {
             ctx.contentType(ContentType.IMAGE_WEBP)
@@ -194,7 +199,7 @@ public class App {
         String compressed = null;
         if (results.size() == 20) {
             var deckId = compressor.compress(cardIds);
-            previewGeneratorThread.execute(() -> previewGenerator.generatePreview(cardIds, deckId));
+            previewGeneratorExecutor.execute(() -> previewGenerator.generatePreview(cardIds, deckId));
             compressed = deckId;
         }
 
