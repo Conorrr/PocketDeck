@@ -20,7 +20,9 @@
 	class:opacity-0={!open}
 	class:pointer-events-none={!open}
 	onclick={close}
-/>
+	aria-hidden="true"
+>
+</div>
 
 <!-- Panel -->
 <div

@@ -33,6 +33,7 @@
 		onmouseleave={() => (rotateX.set(0), rotateY.set(0))}
 		class="w-full h-full rounded-lg shadow-lg transition-transform duration-300 ease-out will-change-transform hover:scale-105"
 		style={`transform: rotateX(${rotateX.current}deg) rotateY(${rotateY.current}deg);`}
+		aria-hidden="true"
 	>
 		{@render children?.()}
 		<div
