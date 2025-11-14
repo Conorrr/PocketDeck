@@ -4,8 +4,6 @@
 	import { op } from '$lib/openpanel';
 	import type { PageProps } from './$types';
 
-	let { data }: PageProps = $props();
-
 	let file: File | null = null;
 	let uploading = $state(false);
 	let error: string | null = $state(null);
@@ -120,7 +118,7 @@
 			e.preventDefault();
 			file && handleSubmit(file);
 		}}
-		class="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg border border-slate-200 flex flex-col gap-6"
+		class="w-full max-w-md bg-white p-8 opacity-90 rounded-2xl shadow-lg border border-slate-300/50 flex flex-col gap-6"
 	>
 		<h1 class="text-2xl font-semibold text-slate-800 text-center">Upload a Deck Screenshot</h1>
 

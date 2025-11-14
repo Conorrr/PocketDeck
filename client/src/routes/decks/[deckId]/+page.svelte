@@ -29,7 +29,6 @@
 	<meta property="og:title" content={data.title} />
 	<meta property="og:description" content={data.description} />
 	<meta property="og:image" content={`${PUBLIC_API_URL}/preview/${data.deckId}.webp`} />
-	<meta property="og:url" content={data.currentUrl} />
 	<meta property="og:type" content="website" />
 </svelte:head>
 

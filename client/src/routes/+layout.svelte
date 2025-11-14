@@ -40,14 +40,16 @@
 		</div>
 	</nav>
 
-	<main class="mx-auto w-full max-w-6xl flex-grow px-2 py-5 md:px-0 min-h-100">
+	<main class="mx-auto w-full max-w-6xl flex-grow px-2 py-5 md:px-0 min-h-120">
 		{@render children()}
 	</main>
 
 	<footer
-		class="w-full bg-white border-t border-slate-300 shadow-[0_-4px_10px_rgba(0,0,0,0.1)] py-5 h-30"
+		class="w-full bg-white border-t border-slate-300 shadow-[0_-4px_10px_rgba(0,0,0,0.1)] py-2 h-35 text-center"
 	>
-		<div class="mx-auto flex w-full max-w-4xl items-center justify-center text-slate-500 px-5">
+		<a class="text-md text-center text-slate-500 underline inline-block mb-2" href="/about">about</a> | 
+		<a class="text-md text-center text-slate-500 underline inline-block mb-2" href="/contact">contact</a>
+		<div class="mx-auto w-full max-w-4xl text-center text-slate-500 px-5">
 			All Pokémon images, names, characters, and related marks are trademarks and copyright of The
 			Pokémon Company, Nintendo, Game Freak, or Creatures Inc. (“Pokémon Rights Holders”). PocketDeck.cards
 			is an unofficial site and is not endorsed by or affiliated with Pokémon Rights Holders.
