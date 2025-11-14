@@ -1,10 +1,10 @@
 <script lang="ts">
 	import '../app.css';
-	import favicon from '$lib/assets/favicon.svg';
-	import favicon96 from '$lib/assets/favicon-96x96.png';
-	import faviconIco from '$lib/assets/favicon.ico';
-	import appleTouchIcon from '$lib/assets/apple-touch-icon.png';
-	import logo from '$lib/assets/logo.svg';
+	import favicon from '$lib/assets/favicon.svg?url';
+	import favicon96 from '$lib/assets/favicon-96x96.png?url';
+	import faviconIco from '$lib/assets/favicon.ico?url';
+	import appleTouchIcon from '$lib/assets/apple-touch-icon.png?url';
+	import logo from '$lib/assets/logo.svg?url';
 
 	let { children } = $props();
 </script>
@@ -17,14 +17,15 @@
 	<meta name="apple-mobile-web-app-title" content="PocketDeck" />
 	<link rel="manifest" href="/site.webmanifest" />
 	<meta property="og:logo" content={logo} />
+<meta property="og:locale" content="en" />
 </svelte:head>
 
-<div class="flex min-h-screen bg-slate-100 flex-col bg-[url(/images/bg-left.webp)]">
+<div class="flex min-h-screen bg-slate-100 flex-col bg-[url(/images/bg-left.webp)] min-w-sm">
 	<nav class="bg-white border-b border-slate-200 shadow-lg h-12 margin-auto">
 		<div class="mx-auto pl-4 flex w-full max-w-6xl items-center justify-between">
 			<a href="/" class="block text-2xl text-slate-600 font-bold">
 				<img class="w-11 inline-block" src={logo} alt="PocketDeck.cards logo" />
-				PocketDeck.cards
+				PocketDeck<span class="hidden md:inline">.cards</span>
 			</a>
 
 			<div class="flex h-12">
