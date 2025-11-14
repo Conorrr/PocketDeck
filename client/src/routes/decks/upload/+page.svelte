@@ -94,7 +94,6 @@
 	<meta name="description" content="Easily share decks for Pokemon TCG Pocket. Upload new decks." />
 	<meta property="og:title" content="PocketDeck - Upload" />
 	<meta property="og:description" content="Easily share decks for Pokemon TCG Pocket. Upload new decks." />
-	<meta property="og:url" content={`${data.currentUrl}`} />
 	<meta property="og:type" content="website" />
 </svelte:head>
 

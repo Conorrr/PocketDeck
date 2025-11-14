@@ -30,13 +30,11 @@ export const load: PageServerLoad = async ({ params, url }) => {
 		description += `. ${d4Cards} Deck`;
 	}
 
-	const currentUrl = url.href;
 	return {
 		cards: cardIds,
 		deckId: params.deckId,
 		title,
 		description,
-		currentUrl,
 		name
 	};
 };

@@ -1,12 +1,12 @@
 <script lang="ts">
 	import '../app.css';
-	import favicon from '$lib/assets/favicon.svg?url';
-	import favicon96 from '$lib/assets/favicon-96x96.png?url';
-	import faviconIco from '$lib/assets/favicon.ico?url';
-	import appleTouchIcon from '$lib/assets/apple-touch-icon.png?url';
-	import logo from '$lib/assets/logo.svg?url';
+	import favicon from '$lib/assets/favicon.svg?no-inline';
+	import favicon96 from '$lib/assets/favicon-96x96.png?no-inline';
+	import faviconIco from '$lib/assets/favicon.ico?no-inline';
+	import appleTouchIcon from '$lib/assets/apple-touch-icon.png?no-inline';
+	import logo from '$lib/assets/logo.svg?no-inline';
 
-	let { children } = $props();
+	let { children, data} = $props();
 </script>
 
 <svelte:head>
@@ -17,7 +17,8 @@
 	<meta name="apple-mobile-web-app-title" content="PocketDeck" />
 	<link rel="manifest" href="/site.webmanifest" />
 	<meta property="og:logo" content={logo} />
-<meta property="og:locale" content="en" />
+	<meta property="og:locale" content="en" />
+	<meta property="og:url" content={data.currentUrl} />
 </svelte:head>
 
 <div class="flex min-h-screen bg-slate-100 flex-col bg-[url(/images/bg-left.webp)] min-w-sm">
