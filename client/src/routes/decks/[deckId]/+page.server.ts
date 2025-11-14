@@ -4,8 +4,10 @@ import DeckCompressor from '$lib/DeckCompressor.server';
 import cards from '$lib/data/allCards.json';
 import type { Card } from '$lib/models/Card';
 
+const typedCards = cards as Card[];
+
 const allCards: Map<string, Card> = new Map<string, Card>(
-	cards.map(card => [card.cardIds[0], card] as const)
+	typedCards.map(card => [card.cardIds[0], card] as const)
 );
 
 const deckCompressor = new DeckCompressor();
@@ -25,7 +27,7 @@ export const load: PageServerLoad = async ({ params, url }) => {
 	if (orderedCards.length > 0) {
 		name = `${orderedCards.splice(0, 3).join('/ ')} Deck`;
 		title = `PocketDeck - ${name}`;
-		description += '. ${d4Cards} Deck';
+		description += `. ${d4Cards} Deck`;
 	}
 
 	const currentUrl = url.href;
