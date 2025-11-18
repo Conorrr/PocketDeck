@@ -8,6 +8,7 @@
 	import { fade } from 'svelte/transition';
 	import { op } from '$lib/openpanel';
 	import { PUBLIC_API_URL } from '$env/static/public';
+	import UploadComponent from '$lib/components/UploadComponent.svelte';
 
 	let slideoverOpen = $state(false);
 	let slideoverCardId: null | string = $state(null);
@@ -31,6 +32,8 @@
 	<meta property="og:image" content={`${PUBLIC_API_URL}/preview/${data.deckId}.webp`} />
 	<meta property="og:type" content="website" />
 </svelte:head>
+
+<UploadComponent showForm={false} />
 
 <div>
 	<div

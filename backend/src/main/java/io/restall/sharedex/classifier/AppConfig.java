@@ -14,7 +14,10 @@ public record AppConfig(
         Path rawCardDetailsPath,
         Path allCardsPath,
         String uiHost,
-        Path previewDir
+        Path previewDir,
+        String dbUrl,
+        String dbUser,
+        String dbPassword
 ) {
 
     private static String CARD_IMAGE_DIR = "CARD_IMAGE_DIR";
@@ -27,6 +30,9 @@ public record AppConfig(
     private static String ALL_CARDS_PATH = "ALL_CARDS_PATH";
     private static String UI_HOST = "UI_HOST";
     private static String PREVIEW_DIR = "PREVIEW_DIR";
+    private static String DB_URL = "DB_URL";
+    private static String DB_USER = "DB_USER";
+    private static String DB_PASS = "DB_PASS";
 
 
     public static AppConfig fromEnv() {
@@ -40,7 +46,10 @@ public record AppConfig(
                 pathFromEnv(RAW_CARD_DETAILS_PATH),
                 pathFromEnv(ALL_CARDS_PATH),
                 System.getenv(UI_HOST),
-                pathFromEnv(PREVIEW_DIR)
+                pathFromEnv(PREVIEW_DIR),
+                System.getenv(DB_URL),
+                System.getenv(DB_USER),
+                System.getenv(DB_PASS)
         );
     }
 

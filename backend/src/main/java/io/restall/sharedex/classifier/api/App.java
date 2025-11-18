@@ -3,6 +3,7 @@ package io.restall.sharedex.classifier.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.javalin.Javalin;
 import io.javalin.http.ContentType;
 import io.javalin.http.Context;
@@ -10,16 +11,14 @@ import io.javalin.http.HttpStatus;
 import io.javalin.http.UploadedFile;
 import io.restall.sharedex.classifier.AppConfig;
 import io.restall.sharedex.classifier.ColourPHashMatcher;
-import io.restall.sharedex.classifier.OutlineFinder;
-import io.restall.sharedex.classifier.SafetyMat;
+import io.restall.sharedex.classifier.MatchFinder;
+import io.restall.sharedex.classifier.bot.Bot;
+import io.restall.sharedex.classifier.bot.DeckRepository;
+import io.restall.sharedex.classifier.bot.RedditClient;
 import io.restall.sharedex.classifier.opencv.PokemonCardRecognizer;
 import io.restall.sharedex.classifier.opencv.Prediction;
-import lombok.Cleanup;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.math3.util.Pair;
-import org.opencv.core.Mat;
-import org.opencv.imgcodecs.Imgcodecs;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,31 +26,27 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static io.restall.sharedex.classifier.opencv.PokemonCardRecognizer.isBlank;
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 
 @Slf4j
 public class App {
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
     private final DeckCompressor compressor;
-    private final ColourPHashMatcher hashMatcher;
-    private final PokemonCardRecognizer cardRecogniser;
-    private final SafeImageDecoder imageDecoder = new SafeImageDecoder();
     private final ImageDownloader imageDownloader = new ImageDownloader();
     private final PreviewGenerator previewGenerator;
+    private final MatchFinder matchFinder;
+    private final DeckRepository deckRepo;
     private final Path uploadDir;
     private final Path previewDir;
     private final String uiHost;
-    private final Map<String, String> rarityMap;
     private final ExecutorService previewGeneratorExecutor = Executors.newFixedThreadPool(2);
+    private final Bot bot;
 
     private final Map<String, LocalDateTime> lastReqTime = new ConcurrentHashMap<>();
 
@@ -59,16 +54,27 @@ public class App {
         if (!Files.exists(appConfig.uploadDir())) {
             Files.createDirectories(appConfig.uploadDir());
         }
-        hashMatcher = new ColourPHashMatcher(appConfig.pHashBinary());
-        cardRecogniser = new PokemonCardRecognizer(50, true);
+
+        var om = new ObjectMapper();
+        om.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
+        om.registerModule(new JavaTimeModule());
+
+        var hashMatcher = new ColourPHashMatcher(appConfig.pHashBinary());
+        var cardRecogniser = new PokemonCardRecognizer(50, true);
         cardRecogniser.loadDatabase(appConfig.orbDatabaseBin());
-        rarityMap = new ObjectMapper().readValue(Files.newInputStream(appConfig.rarityMapPath()), new TypeReference<>() {
+        var rarityMap = om.readValue(Files.newInputStream(appConfig.rarityMapPath()), new TypeReference<Map<String, String>>() {
         });
+
+        matchFinder = new MatchFinder(hashMatcher, cardRecogniser, rarityMap);
         compressor = new DeckCompressor(appConfig.cardListPath());
         previewGenerator = new PreviewGenerator(appConfig);
         uploadDir = appConfig.uploadDir();
         uiHost = appConfig.uiHost();
         previewDir = appConfig.previewDir();
+
+        var redditClient = new RedditClient(om);
+        deckRepo = new DeckRepository(appConfig.dbUrl(), appConfig.dbUser(), appConfig.dbPassword());
+        bot = new Bot(redditClient, deckRepo, imageDownloader, matchFinder, compressor);
     }
 
     public void start() {
@@ -81,7 +87,10 @@ public class App {
                 .post("/upload", this::handleUpload)
                 .post("/report", App::handleReport)
                 .get("/deck/{deckId}", this::handleGetDeck)
+                .get("/latest", this::handleLatest)
                 .start(7070);
+
+        bot.start();
     }
 
     public static void main(String[] args) throws IOException {
@@ -161,39 +170,8 @@ public class App {
         }
     }
 
-    private void processFile(Context ctx, String requestId, InputStream fileInputStream) {
-        var screenshotMat = readImage(fileInputStream);
-
-        var outlines = OutlineFinder.findOutlines(screenshotMat);
-        var results = outlines.stream()
-                .flatMap(rect -> {
-                    @Cleanup var cutout = new SafetyMat(screenshotMat, rect);
-                    if (isBlank(cutout)) {
-                        return Optional.<Prediction>empty().stream();
-                    }
-                    var roughMatches = hashMatcher.findTopMatches(cutout, 5, 70.0);
-                    if (roughMatches.isEmpty()) {
-                        return Optional.<Prediction>empty().stream();
-                    }
-                    if (roughMatches.size() > 1) {
-                        // if the multiple close matches use ORB to refine search
-                        if (roughMatches.get(0).getValue() - roughMatches.get(1).getValue() < roughMatches.get(0).getValue() * 0.02) {
-                            var roughMatchCardIds = roughMatches.stream().map(Pair::getKey).collect(Collectors.toSet());
-                            return cardRecogniser.recognize(cutout, 1, roughMatchCardIds).getBestMatch()
-                                    .map(prediction -> {
-                                        var hashScore = roughMatches.stream().filter(pair -> pair.getKey().equals(prediction.cardName()))
-                                                .map(Pair::getValue)
-                                                .findFirst()
-                                                .orElse(0.0);
-                                        return new Prediction(prediction.cardName(), hashScore, prediction.matchCount(), prediction.confidence());
-                                    })
-                                    .stream();
-                        }
-                    }
-                    return Stream.of(new Prediction(roughMatches.get(0).getKey(), roughMatches.get(0).getValue(), 0, 0));
-                })
-                .map(prediction -> new Prediction(rarityMap.getOrDefault(prediction.cardName(), prediction.cardName()), prediction.hashScore(), prediction.matchCount(), prediction.confidence()))
-                .toList();
+    private void processFile(Context ctx, String requestId, InputStream inputStream) {
+        var results = matchFinder.findMatches(inputStream);
 
         var cardIds = results.stream().map(Prediction::cardName).toList();
         String compressed = null;
@@ -201,6 +179,7 @@ public class App {
             var deckId = compressor.compress(cardIds);
             previewGeneratorExecutor.execute(() -> previewGenerator.generatePreview(cardIds, deckId));
             compressed = deckId;
+            deckRepo.insertDeck(deckId);
         }
 
         ctx.status(HttpStatus.OK)
@@ -218,22 +197,15 @@ public class App {
         Files.copy(inputStream, target);
     }
 
-    @SneakyThrows
-    private Mat readImage(InputStream is) {
-        return imageDecoder.safeDecode(
-                is.readAllBytes(),
-                5_000_000,        // max encoded bytes (5 MB)
-                8000,             // max width
-                8000,             // max height
-                50_000_000L,      // max pixels
-                3000,             // 3 second decode timeout
-                Imgcodecs.IMREAD_COLOR
-        );
-    }
-
     private static void handleReport(Context ctx) {
         // map from json object
         // { uploadId: uuid }
+    }
+
+    private void handleLatest(Context ctx) {
+        var latestDecks = deckRepo.getLatestDecks();
+        ctx.status(HttpStatus.OK)
+                .json(latestDecks);
     }
 
     private void handleGetDeck(Context ctx) {
