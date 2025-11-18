@@ -24,7 +24,7 @@
 >
 </div>
 
-<svelte:window onkeydown={e => e.key === 'Escape' && close()} />
+<svelte:window ondrop={close} onkeydown={e => e.key === 'Escape' && close()} />
 
 <!-- Panel -->
 <div
