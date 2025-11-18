@@ -36,6 +36,7 @@ public class DeckRepository {
         String insertDeckSql = """
                 INSERT INTO decks (id, post_id, created)
                 VALUES (?, ?, ?)
+                ON CONFLICT (id) DO NOTHING
                 """;
 
         try (var conn = getConnection();
