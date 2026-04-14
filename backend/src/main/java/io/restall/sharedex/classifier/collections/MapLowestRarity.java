@@ -103,8 +103,10 @@ public class MapLowestRarity {
             case "A4a" -> 9;
             case "A4b" -> 10;
             case "B1" -> 11;
-            case "P-A" -> 12;
-            case "P-B" -> 13;
+            case "B2a" -> 12;
+            case "B2b" -> 13;
+            case "P-A" -> 14;
+            case "P-B" -> 15;
             default -> throw new RuntimeException("unknown expansion: " + details.expansion());
         };
     }
